@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SkyCast - Modern Weather Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+    body {
+      background-color: #0f172a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: #1e293b;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    header .logo i {
+      color: #38bdf8;
+      font-size: 1.8rem;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #cbd5e1;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover { color: #38bdf8; }
+
+    /* Content Area */
+    .content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 80px;
+      background-color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 2rem;
+      gap: 2rem;
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .sidebar i {
+      font-size: 24px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .sidebar i:hover { color: #38bdf8; }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      gap: 2rem;
+      overflow-y: auto;
+    }
+
+    /* Weather display */
+    .weather-display {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      min-width: 320px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #334155;
+      border-radius: 12px;
+      padding: 0.5rem 1rem;
+      position: relative;
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 1rem;
+      padding-left: 0.5rem;
+    }
+
+    .search-bar i {
+      color: #38bdf8;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* Suggestions dropdown */
+    .suggestions {
+      position: absolute;
+      top: 45px;
+      left: 0;
+      width: 100%;
+      background: #334155;
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .suggestions div {
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .suggestions div:hover { background: #475569; }
+
+    .city-name {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-top: 2rem;
+    }
+
+    .temperature {
+      font-size: 5rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+    }
+
+    .weather-condition {
+      font-size: 1.5rem;
+      color: #94a3b8;
+    }
+
+    .hourly {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      background: #334155;
+      border-radius: 12px;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    .hour {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    /* Air Conditions Section */
+    .air {
+      background: #334155;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      transition: all 0.3s ease;
+    }
+
+    .air:hover {
+      box-shadow: 0 0 25px rgba(56,189,248,0.4);
+    }
+
+    .air h3 {
+      grid-column: 1 / -1;
+      font-size: 1.4rem;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+    }
+
+    .air-item {
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    .air-item:hover {
+      transform: translateY(-5px);
+      background: #0f172a;
+    }
+
+    .air-item i {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: #38bdf8;
+    }
+
+    .air-item span {
+      font-size: 1rem;
+      color: #94a3b8;
+    }
+
+    /* Forecast */
+    .forecast {
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      min-width: 300px;
+    }
+
+    .forecast h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .forecast-day {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #334155;
+    }
+
+    .forecast-day:last-child { border: none; }
+    .forecast-day span { color: #94a3b8; }
+
+    /* New Weather Insights Section */
+    .insights {
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+
+    .insights h2 {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .insight-card {
+      background: #334155;
+      border-radius: 12px;
+      text-align: center;
+      padding: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .insight-card:hover {
+      transform: translateY(-5px);
+      background: #0f172a;
+    }
+
+    .insight-card i {
+      font-size: 2rem;
+      color: #38bdf8;
+      margin-bottom: 0.5rem;
+    }
+
+    .insight-card h4 { color: white; margin-bottom: 0.3rem; }
+    .insight-card p { color: #94a3b8; }
+
+    /* Namaz Timings Section */
+    .namaz {
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+
+    .namaz h2 {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 0.5rem;
+    }
+
+    .namaz .updated {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .namaz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .namaz-card {
+      background: #334155;
+      border-radius: 12px;
+      padding: 0.9rem;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .namaz-card h4 { color: #38bdf8; margin-bottom: 0.4rem; }
+    .namaz-card p { color: white; font-size: 1.1rem; font-weight: 600; }
+
+    .namaz-card:hover { transform: translateY(-5px); background: #0f172a; }
+
+    /* Footer */
+    footer {
+      background: #1e293b;
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #94a3b8;
+      font-size: 1rem;
+      border-top: 1px solid #334155;
+      margin-top: auto;
+    }
+
+    footer a {
+      color: #38bdf8;
+      text-decoration: none;
+      margin: 0 0.5rem;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .content { flex-direction: column; }
+      .sidebar { flex-direction: row; width: 100%; justify-content: space-around; padding: 1rem 0; }
+      .main { flex-direction: column; padding: 1rem; }
+    }
+
+    @media (max-width: 600px) {
+      header { flex-direction: column; gap: 1rem; }
+      nav ul { flex-wrap: wrap; justify-content: center; }
+      .temperature { font-size: 3.5rem; }
+      .city-name { font-size: 1.8rem; }
+      .sidebar { display: none; }
+      footer { font-size: 0.85rem; padding: 2.5rem 1rem; }
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/a2e0b1c6fd.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <i class="fas fa-cloud-sun"></i> SkyCast
+    </div>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    <div class="sidebar">
+      <i class="fas fa-cloud"></i>
+      <i class="fas fa-city"></i>
+      <i class="fas fa-map"></i>
+      <i class="fas fa-cog"></i>
+    </div>
+
+    <div class="main">
+      <div class="weather-display">
+        <div class="search-bar">
+          <input type="text" id="city-input" placeholder="Search for cities..." autocomplete="off" />
+          <i class="fas fa-search" id="search-btn"></i>
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+
+        <div>
+          <div class="city-name" id="city-name">Loading...</div>
+          <div class="weather-condition" id="weather-desc"></div>
+          <div class="temperature" id="temp"></div>
+        </div>
+
+        <div class="hourly" id="hourly"></div>
+
+        <div class="air">
+          <h3>Air Conditions</h3>
+          <div class="air-item">
+            <i class="fas fa-thermometer-half"></i>
+            <span>Real Feel: <strong id="real-feel"></strong>°C</span>
+          </div>
+          <div class="air-item">
+            <i class="fas fa-wind"></i>
+            <span>Wind: <strong id="wind"></strong> km/h</span>
+          </div>
+          <div class="air-item">
+            <i class="fas fa-tint"></i>
+            <span>Humidity: <strong id="humidity"></strong>%</span>
+          </div>
+          <div class="air-item">
+            <i class="fas fa-sun"></i>
+            <span>UV Index: <strong id="uv"></strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="forecast">
+        <h2>7-DAY FORECAST</h2>
+        <div id="forecast-list"></div>
+      </div>
+
+      <!-- NEW WEATHER INSIGHTS SECTION -->
+      <div class="insights">
+        <h2>Weather Insights</h2>
+        <div class="insight-grid">
+          <div class="insight-card">
+            <i class="fas fa-sun"></i>
+            <h4>Sunrise</h4>
+            <p id="sunrise">--:--</p>
+          </div>
+          <div class="insight-card">
+            <i class="fas fa-moon"></i>
+            <h4>Sunset</h4>
+            <p id="sunset">--:--</p>
+          </div>
+          <div class="insight-card">
+            <i class="fas fa-tachometer-alt"></i>
+            <h4>Pressure</h4>
+            <p id="pressure">-- hPa</p>
+          </div>
+          <div class="insight-card">
+            <i class="fas fa-eye"></i>
+            <h4>Visibility</h4>
+            <p id="visibility">-- km</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NAMAZ TIMINGS (NEW SECTION) -->
+      <div class="namaz" id="namaz-section">
+        <h2>Namaz Timings</h2>
+        <div class="updated" id="namaz-updated">Prayer times not loaded yet</div>
+        <div class="namaz-grid" id="namaz-grid">
+          <div class="namaz-card"><h4>Fajr</h4><p id="fajr">--:--</p></div>
+          <div class="namaz-card"><h4>Sunrise</h4><p id="sunrise-namaz">--:--</p></div>
+          <div class="namaz-card"><h4>Dhuhr</h4><p id="dhuhr">--:--</p></div>
+          <div class="namaz-card"><h4>Asr</h4><p id="asr">--:--</p></div>
+          <div class="namaz-card"><h4>Maghrib</h4><p id="maghrib">--:--</p></div>
+          <div class="namaz-card"><h4>Isha</h4><p id="isha">--:--</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 SkyCast | <a href="/">Home</a> | <a href="/about/">About</a> | <a href="/contact/">Contact</a></p>
+    <p>Follow us on 
+      <a href="#"><i class="fab fa-twitter"></i></a> 
+      <a href="#"><i class="fab fa-instagram"></i></a> 
+      <a href="#"><i class="fab fa-facebook"></i></a>
+    </p>
+  </footer>
+
+  <script>
+    const apiKey = "2106c44fe7d781ba98de1ba13a208a84";
+    const cityInput = document.getElementById("city-input");
+    const searchBtn = document.getElementById("search-btn");
+    const suggestionsBox = document.getElementById("suggestions");
+
+    // Utility: convert "HH:MM" or "HH:MM (GMT+...)" or "HH:MM (DST)" strings to 12-hour "hh:mm AM/PM"
+    function convertTo12Hour(timeStr) {
+      if (!timeStr) return "--:--";
+      // extract the first HH:MM occurrence
+      const match = timeStr.match(/(\d{1,2}:\d{2})/);
+      if (!match) return timeStr;
+      const [hoursStr, minutes] = match[1].split(':');
+      let hours = parseInt(hoursStr, 10);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      if (hours === 0) hours = 12;
+      if (hours > 12) hours = hours - 12;
+      const h = hours.toString().padStart(2, '0');
+      return `${h}:${minutes} ${ampm}`;
+    }
+
+    async function fetchPrayerTimes(lat, lon, cityName) {
+      try {
+        const url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!data || data.code !== 200 || !data.data) {
+          document.getElementById("namaz-updated").innerText = "Prayer times unavailable";
+          return;
+        }
+
+        const timings = data.data.timings || {};
+        // Use timezone from response meta when available
+        const timezone = (data.data.meta && data.data.meta.timezone) ? data.data.meta.timezone : undefined;
+
+        // Map values and convert to 12-hour format
+        document.getElementById("fajr").innerText = convertTo12Hour(timings.Fajr);
+        document.getElementById("sunrise-namaz").innerText = convertTo12Hour(timings.Sunrise);
+        document.getElementById("dhuhr").innerText = convertTo12Hour(timings.Dhuhr);
+        document.getElementById("asr").innerText = convertTo12Hour(timings.Asr);
+        document.getElementById("maghrib").innerText = convertTo12Hour(timings.Maghrib);
+        document.getElementById("isha").innerText = convertTo12Hour(timings.Isha);
+
+        // Last updated text using the city's timezone if available
+        let updatedStr = `Prayer times updated for ${cityName}`;
+        try {
+          if (timezone) {
+            const nowLocal = new Date().toLocaleString('en-US', {
+              hour: '2-digit', minute: '2-digit', hour12: true, timeZone: timezone
+            });
+            updatedStr += ` — ${nowLocal} (${timezone})`;
+          } else {
+            const now = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            updatedStr += ` — ${now}`;
+          }
+        } catch (e) {
+          // fallback
+          const now = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+          updatedStr += ` — ${now}`;
+        }
+        document.getElementById("namaz-updated").innerText = updatedStr;
+
+      } catch (err) {
+        console.error("AlAdhan error:", err);
+        document.getElementById("namaz-updated").innerText = "Prayer times unavailable";
+      }
+    }
+
+    async function fetchWeather(city) {
+      try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`);
+        const data = await res.json();
+        if (data.cod !== "200" && data.cod !== 200) {
+          document.getElementById("city-name").innerText = "City not found";
+          document.getElementById("weather-desc").innerText = "";
+          document.getElementById("temp").innerText = "";
+          return;
+        }
+
+        const current = data.list[0];
+        document.getElementById("city-name").innerText = data.city.name;
+        document.getElementById("weather-desc").innerText = current.weather[0].description;
+        document.getElementById("temp").innerText = `${Math.round(current.main.temp)}°`;
+        document.getElementById("real-feel").innerText = Math.round(current.main.feels_like);
+        document.getElementById("wind").innerText = current.wind.speed;
+        document.getElementById("humidity").innerText = current.main.humidity;
+        document.getElementById("uv").innerText = "N/A";
+        document.getElementById("pressure").innerText = `${current.main.pressure} hPa`;
+        document.getElementById("visibility").innerText = `${(current.visibility / 1000).toFixed(1)} km`;
+
+        // Sunrise/Sunset from city data (city.sunrise / sunset are in seconds)
+        const sunriseTime = new Date(data.city.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const sunsetTime = new Date(data.city.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById("sunrise").innerText = sunriseTime;
+        document.getElementById("sunset").innerText = sunsetTime;
+
+        // Hourly Forecast (first 6 entries)
+        const hourlyContainer = document.getElementById("hourly");
+        hourlyContainer.innerHTML = "";
+        for (let i = 0; i < 6 && i < data.list.length; i++) {
+          const item = data.list[i];
+          const time = new Date(item.dt * 1000).toLocaleTimeString([], { hour: "2-digit" });
+          hourlyContainer.innerHTML += `
+            <div class="hour">
+              <span>${time}</span>
+              <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}.png" width="40">
+              <span>${Math.round(item.main.temp)}°</span>
+            </div>`;
+        }
+
+        // 7-Day Forecast approximation (every 8th item)
+        const forecastContainer = document.getElementById("forecast-list");
+        forecastContainer.innerHTML = "";
+        const daily = data.list.filter((_, i) => i % 8 === 0);
+        daily.forEach((dayData) => {
+          const day = new Date(dayData.dt * 1000).toLocaleDateString("en-US", { weekday: "short" });
+          forecastContainer.innerHTML += `
+            <div class="forecast-day">
+              <strong>${day}</strong>
+              <img src="https://openweathermap.org/img/wn/${dayData.weather[0].icon}.png" width="40">
+              <span>${Math.round(dayData.main.temp)}°C</span>
+            </div>`;
+        });
+
+        // Fetch Namaz timings using latitude & longitude (Option 2)
+        const lat = data.city.coord.lat;
+        const lon = data.city.coord.lon;
+        fetchPrayerTimes(lat, lon, data.city.name);
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    searchBtn.addEventListener("click", () => {
+      const city = cityInput.value.trim();
+      if (city) fetchWeather(city);
+    });
+
+    // Allow pressing Enter in input to search
+    cityInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const city = cityInput.value.trim();
+        if (city) fetchWeather(city);
+      }
+    });
+
+    // Suggestions
+    const cities = ["London", "Paris", "Berlin", "Tokyo", "New York", "Lahore", "Islamabad", "Karachi", "Dubai", "Sydney"];
+    cityInput.addEventListener("input", () => {
+      const value = cityInput.value.toLowerCase();
+      suggestionsBox.innerHTML = "";
+      if (!value) return;
+      const filtered = cities.filter(c => c.toLowerCase().includes(value));
+      filtered.forEach(city => {
+        const div = document.createElement("div");
+        div.textContent = city;
+        div.onclick = () => {
+          cityInput.value = city;
+          suggestionsBox.innerHTML = "";
+          fetchWeather(city);
+        };
+        suggestionsBox.appendChild(div);
+      });
+    });
+
+    window.addEventListener("load", () => fetchWeather("Lahore"));
+  </script>
+</body>
+</html>

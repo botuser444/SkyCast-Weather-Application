@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact - SkyCast</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2e0b1c6fd.js" crossorigin="anonymous"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body {
+      background-color: #0f172a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ✅ Updated selector for logo underline issue */
+    header a.logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #38bdf8;
+      text-decoration: none !important;
+      border: none !important;
+    }
+    header a.logo:visited,
+    header a.logo:hover,
+    header a.logo:focus {
+      text-decoration: none !important;
+      color: #38bdf8;
+    }
+
+    nav ul { display: flex; list-style: none; gap: 2rem; }
+    nav a { text-decoration: none; color: #cbd5e1; transition: color 0.3s; }
+    nav a:hover { color: #38bdf8; }
+
+    .container {
+      flex: 1;
+      padding: 3rem 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      animation: fadeIn 1s ease-in-out;
+    }
+    h1 { text-align: center; color: #38bdf8; margin-bottom: 1rem; font-size: 2rem; }
+    .intro { text-align: center; color: #cbd5e1; margin-bottom: 2rem; }
+
+    form {
+      background: #1e293b;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+    label { display: block; margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600; }
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 10px;
+      background: #334155;
+      color: white;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 10px;
+      background: #38bdf8;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover { background: #0ea5e9; }
+
+    .contact-info {
+      margin-top: 3rem;
+      text-align: center;
+      color: #cbd5e1;
+    }
+    .contact-info i {
+      color: #38bdf8;
+      margin-right: 10px;
+    }
+    .success {
+      background: #22c55e;
+      padding: 0.8rem;
+      color: white;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    footer {
+      background: #1e293b;
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #94a3b8;
+      border-top: 1px solid #334155;
+    }
+    footer a { color: #38bdf8; text-decoration: none; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      header { flex-direction: column; gap: 1rem; text-align: center; }
+      .container { padding: 2rem 1rem; }
+      h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="{% url 'home' %}" class="logo">
+      <i class="fas fa-cloud-sun"></i> SkyCast
+    </a>
+
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1>Contact Us</h1>
+    <p class="intro">Got a question, idea, or partnership request? Send us a message and we’ll get back to you soon.</p>
+
+    <form id="contact-form">
+      <label>Name</label>
+      <input type="text" id="name" placeholder="Enter your name" required>
+      <label>Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+      <label>Message</label>
+      <textarea id="message" placeholder="Write your message..." required></textarea>
+      <button type="submit">Send Message</button>
+      <div class="success" id="success-msg">✅ Thank you! Your message has been sent.</div>
+    </form>
+
+    <div class="contact-info">
+      <p><i class="fas fa-phone"></i> +92 3368741603</p>
+      <p><i class="fas fa-map-marker-alt"></i> Islamabad, Pk</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 SkyCast | <a href="/">Home</a> | <a href="/about/">About</a> | <a href="/contact/">Contact</a></p>
+  </footer>
+
+  <script>
+    const form = document.getElementById("contact-form");
+    const successMsg = document.getElementById("success-msg");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      successMsg.style.display = "block";
+      form.reset();
+      setTimeout(() => successMsg.style.display = "none", 4000);
+    });
+  </script>
+</body>
+</html>
